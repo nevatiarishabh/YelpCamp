@@ -2,7 +2,10 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var Campground = require('./models/campground');
+var seedDB = require("./seeds");
 
+seedDB();
 mongoose.connect("mongodb://localhost:27017/yelp_camp", {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -11,26 +14,6 @@ mongoose.connect("mongodb://localhost:27017/yelp_camp", {
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
-
-// Campground.create(
-//     {
-//         name: "Salmon Creek",
-//         image: "https://cf.bstatic.com/images/hotel/max1024x768/234/234843649.jpg",
-//         description: "Salmon Creek is a beautiful place with lots of fun. This camp has no electricity, has fresh river water available one kilometer away."
-//     }, function(err, res){
-//         if(err){
-//             console.log(err);
-//         } else {
-//             console.log("Newly created CG!");
-//             console.log(res);
-//         }
-//     });
-
-var campgrounds = [ 
-    {name: "Salmon Creek", image: "https://cf.bstatic.com/images/hotel/max1024x768/234/234843649.jpg"},
-    {name: "Granite Hill", image: "https://imgmedia.lbb.in/media/2019/10/5da5ae92263917793a3b308c_1571139218919.jpg"},
-    {name: "Mountain Goat's Rest", image: "https://www.exoticamp.com/wp-content/uploads/2018/04/29983061_640965312923162_4735239029177375606_o.jpg"}
-]
 
 app.get('/', function(req, res){
     res.render('landing');
@@ -66,7 +49,7 @@ app.get('/campgrounds/new', function(req, res){
 })
 
 app.get('/campgrounds/:id', function(req, res){
-    Campground.findById(req.params.id, function(err, foundCampground){
+    Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){
         if(err){
             console.log(err);
         } else{
