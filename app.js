@@ -1,8 +1,10 @@
+require("dotenv").config();
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var flash = require('connect-flash');
+const configDB = require('./config/database');
 var passport = require('passport');
 var LocalStrategy = require('passport-local');
 var methodOverride = require('method-override');
@@ -17,7 +19,7 @@ var indexRoutes = require('./routes/index');
 
 // seedDB(); //seed the database
 
-mongoose.connect("mongodb://localhost:27017/yelp_camp", {
+mongoose.connect(configDB.url, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -31,7 +33,7 @@ app.use(flash());
 
 //PASSPORT CONFIGURATION
 app.use(require('express-session')({
-    secret: 'abba',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
 }));
